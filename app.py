@@ -42,9 +42,6 @@ def index():
     """Empty State"""
     return render_template("index.html")
 
-    """Show Account Data"""
-
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
