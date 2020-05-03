@@ -58,9 +58,11 @@
             </header>
         {% endif %}
 
-        <main class="container p-5">
+        <main id="maincontainer" class="container p-5">
             {% block main %}{% endblock %}
         </main>
+
+        <div id="loading" style='display:none;'></div>
 
         <footer class="small text-center text-muted">
 

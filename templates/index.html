@@ -78,6 +78,10 @@ Dashboard
         },
 
         onSuccess: function (public_token, metadata) {
+            $('#maincontainer').fadeOut('fast', function() {
+                $('#loading').fadeIn('fast');
+            });
+
             // Send the public_token to your app server.
             // The metadata object contains info about the institution the
             // user selected and the account ID or IDs, if the
@@ -88,6 +92,7 @@ Dashboard
                     public_token: public_token,
                 }, 
                 success: function(data) {
+                    $('#loading').fadeOut('slow');
                     document.location.reload();
                 }
             });

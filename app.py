@@ -231,17 +231,29 @@ def login():
 @app.route("/transactions", methods=["GET"])
 @login_required
 def transactions():
+    # Calculate today's date 
+    today = datetime.date.today()
+
+    # Calculate the last 30 days 
+    last_thirty = datetime.date.today() - relativedelta(days=30)
+    
+
     transactions = get_db().execute("""
         SELECT financial_institution.institution_name, accounts.official_name, accounts.mask, 
                 transactions.amount, transactions.name, transactions.date 
         FROM transactions 
         JOIN accounts on accounts.account_id = transactions.account_id 
         JOIN financial_institution on financial_institution.institution_id = accounts.institution_id 
-        WHERE financial_institution.user_id = :user_id 
+        WHERE 
+            financial_institution.user_id = :user_id AND
+            transactions.date  <= :today  AND
+            transactions.date >= :last_thirty
         ORDER BY transactions.date DESC
-    """, user_id = session["user_id"] )
+    """, user_id = session["user_id"],
+        today = today.isoformat(),
+        last_thirty = last_thirty.isoformat())
         
-    return render_template("transactions.html", transactions=transactions )
+    return render_template("transactions.html", today=today, last_thirty=last_thirty, transactions=transactions )
 
 @app.route("/logout")
 def logout():
@@ -367,6 +379,7 @@ def budget():
                 WHERE user_id = :user_id AND category = :category
             """, category=category, user_id=session["user_id"], budget_amount=budget_amount )
 
+        flash('Your budget have been updated!')
         return redirect("/budget")
 
 # def errorhandler(e):
