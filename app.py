@@ -286,7 +286,7 @@ def register():
                     firstname=request.form.get("firstname"),
                     lastname=request.form.get("lastname"),
                     hash=generate_password_hash(request.form.get("password")))
-                 
+        
 
         # Query database for username
         rows = get_db().execute("SELECT * FROM users WHERE username = :username",
@@ -295,9 +295,79 @@ def register():
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
 
+        # GET list of categories from Plaid
+        categories = client.Categories.get()                 
+        top_level_categories = list( set( sorted( category['hierarchy'][0] for category in categories['categories'] ) ) )
+
+        # when user regristers for the first time, update budget table with categories 
+        for category_name in top_level_categories:
+            get_db().execute("INSERT INTO budget (user_id, category) VALUES (:user_id, :category)",
+                        user_id = session["user_id"],
+                        category = category_name )
+
         # Redirect user to home page
         return redirect("/")
 
+
+@app.route("/budget", methods=["GET", "POST"])
+@login_required
+def budget():
+    if request.method == "GET":
+
+        # Calculate the first day of last month 
+        prev_month_firstday = datetime.date.today().replace( day=1 ) - relativedelta(months=1)
+        
+        # Calculate the last day of the month 
+        prev_month_lastday = datetime.date.today().replace( day=1 ) - relativedelta(days=1)
+        
+        budgets = get_db().execute("""
+            SELECT budget.category, 
+                   budget_summary.month_total * -1 as month_total, 
+                   budget.amount as budget_amount
+            FROM budget
+            LEFT OUTER JOIN ( 
+                SELECT category, sum(amount) as month_total
+                FROM transactions
+                JOIN accounts on accounts.account_id = transactions.account_id 
+                WHERE 
+                    accounts.user_id = :user_id AND
+                    transactions.date >= :prev_month_firstday  AND
+                    transactions.date <= :prev_month_lastday 
+                GROUP BY transactions.category ) as budget_summary
+            ON budget_summary.category = budget.category
+            WHERE budget.user_id = :user_id
+            ORDER BY budget.category
+        """, 
+        user_id = session["user_id"], 
+        prev_month_firstday=prev_month_firstday.isoformat(),
+        prev_month_lastday=prev_month_lastday.isoformat())
+
+        active_accounts = get_db().execute( """
+            SELECT account_id 
+            FROM accounts 
+            WHERE user_id = :user_id
+        """, user_id=session["user_id"])
+
+        return render_template("budget.html", 
+                                active_accounts=active_accounts,
+                                prev_month_firstday=prev_month_firstday,
+                                budgets=budgets)
+
+    if request.method == "POST":
+        
+        for category, budget_amount in request.form.items():
+            if budget_amount:
+                budget_amount = float(budget_amount)
+            else: 
+                budget_amount = None
+
+            get_db().execute( """
+                UPDATE budget 
+                SET amount =:budget_amount 
+                WHERE user_id = :user_id AND category = :category
+            """, category=category, user_id=session["user_id"], budget_amount=budget_amount )
+
+        return redirect("/budget")
 
 # def errorhandler(e):
 #     """Handle error"""

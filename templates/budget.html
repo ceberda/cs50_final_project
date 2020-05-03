@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Budget
+{% endblock %}
+
+{% block main %}
+
+{% if active_accounts %}
+
+<h1> Your Budget </h1>
+<form action="/budget" method="post">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Last Month Value</th>
+                <th>Budget</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for budget in budgets %}
+            <tr>
+                <td>{{ budget.category }}</td>
+                {% if budget.month_total is not none %}
+                <td>{{ budget.month_total | usd }}</td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
+                <td>$ <input name="{{ budget.category }}" value="{{ budget.budget_amount if budget.budget_amount != none else ""}}" text="number"></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button class="btn btn-primary" type="submit">Save</button>
+</form>
+
+
+{% else %}
+
+<div class="col-sm-6">
+    <img src="static/jesse_graph.svg" width = "50px"/> 
+</div>
+<div class="col-sm-6">
+    <h3> Check back here once your have added accounts</h3>
+</div>
+
+{% endif %}
+
+{% endblock %}
