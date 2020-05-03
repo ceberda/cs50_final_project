@@ -7,13 +7,21 @@
 {% block main %}
     <div class="row">
       <div class="col-sm-6">
-          
-          <img src="static/cash.svg" width = "50px"/>
           <h2>All your money under one roof</h2>
-
+          <p>When you’re on top of your money, life is good. Jesse is here to help you effortlessly manage your
+            finances all in one place. Get started today for free.  Link all your bank accounts, Jesse will take care of the rest.</p>
+            
+            <img src="static/cash.svg" width = "50px"/> 
+            <p>Track your spend.</p>
       </div>
       <div class="col-sm-6">
             <form action="/register" method="post">
+                <div class="form-group">
+                    <input autocomplete="off" autofocus class="form-control" name="firstname" placeholder="First name" type="text" required>
+                </div>
+                <div class="form-group">
+                    <input autocomplete="off" autofocus class="form-control" name="lastname" placeholder="Last name" type="text" required>
+                </div>
                 <div class="form-group">
                     <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text" required>
                 </div>
@@ -21,7 +29,7 @@
                     <input class="form-control" name="password" placeholder="Password" type="password" required>
                 </div>
                 <div class="form-group">
-                    <input class="form-control" name="confirmation" placeholder="Password (again)" type="password" required>
+                    <input class="form-control" name="confirmation" placeholder="Confirm password" type="password" required>
                 </div>
                 <button class="btn btn-primary" type="submit">Sign up</button>
             </form>

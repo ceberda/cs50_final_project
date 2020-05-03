@@ -1,9 +1,125 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Dashboard
+Dashboard
 {% endblock %}
 
 {% block main %}
-     <h1>It's looking empty in here</h1>
+
+<h1>Welcome {{ user.firstname }}</h1>
+
+{% if institutions %}
+
+<h2> Your total balance across all accounts is {{ total_balance | usd }}</h2>
+
+{% for institution in institutions %}
+
+<h2> {{ institution.institution_name }} </h2>
+<p> last refreshed {{ institution.timestamp }} </p>
+<p>{{ institution.total_balance | usd }}</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Account name</th>
+            <th>Account mask</th>
+            <th>Account type</th>
+            <th>Balance</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for account in institution.accounts %}
+        <tr>
+            <td>{{ account.official_name }}</td>
+            <td>{{ account.mask }}</td>
+            <td>{{ account.type }}</td>
+            <td>{{ account.current_balance | usd }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endfor %}
+
+{% else %}
+
+<h1> See all your money in one place</h1>
+<p>Get started with Jesse in 3 easy steps</p>
+
+<div class="grid-container">
+    <div class="grid-item">1) Find to your bank</div>
+    <div class="grid-item">2) Securely link your bank accounts to Jesse</div>
+    <div class="grid-item">3) Let Jesse to do the rest</div>  
+</div>
+
+{% endif %}
+
+<button id="link-button" class="btn btn-primary btn-lg">Link Bank Account</button>
+
+<script type="text/javascript">
+    var handler = Plaid.create({
+        clientName: 'Jesse',
+        // Optional, specify an array of ISO-3166-1 alpha-2 country
+        // codes to initialize Link; European countries will have GDPR
+        // consent panel
+        countryCodes: ['US'],
+        env: 'sandbox',
+        // Replace with your public_key from the Dashboard
+        key: '{{ plaid_public_key }}',
+        product: ['auth', 'transactions'],
+
+        // Optional, specify userLegalName and userEmailAddress to
+        // enable all Auth features
+        userLegalName: 'John Appleseed',
+        userEmailAddress: 'jappleseed@yourapp.com',
+
+        onLoad: function () {
+            // Optional, called when Link loads
+        },
+
+        onSuccess: function (public_token, metadata) {
+            // Send the public_token to your app server.
+            // The metadata object contains info about the institution the
+            // user selected and the account ID or IDs, if the
+            // Select Account view is enabled.
+            $.post({
+                url: '/register_access_token',
+                data: {
+                    public_token: public_token,
+                }, 
+                success: function(data) {
+                    document.location.reload();
+                }
+            });
+        },
+
+        onExit: function (err, metadata) {
+            // The user exited the Link flow.
+            if (err != null) {
+                // The user encountered a Plaid API error prior to exiting.
+            }
+            // metadata contains information about the institution
+            // that the user selected and the most recent API request IDs.
+            // Storing this information can be helpful for support.
+        },
+
+        onEvent: function (eventName, metadata) {
+            // Optionally capture Link flow events, streamed through
+            // this callback as your users connect an Item to Plaid.
+            // For example:
+            // eventName = "TRANSITION_VIEW"
+            // metadata  = {
+            //   link_session_id: "123-abc",
+            //   mfa_type:        "questions",
+            //   timestamp:       "2017-09-14T14:42:19.350Z",
+            //   view_name:       "MFA",
+            // }
+        }
+    });
+
+    $('#link-button').on('click', function (e) {
+        handler.open();
+    });
+</script>
+
 {% endblock %}

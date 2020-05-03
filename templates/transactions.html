@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block main %}
+
+<h1>Welcome {{ user.firstname }}</h1>
+
+{% if institutions %}
+
+<h2> Your total balance across all accounts is {{ total_balance | usd }}</h2>
+
+{% for institution in institutions %}
+
+<h2> {{ institution.institution_name }} </h2>
+<p> last refreshed {{ institution.timestamp }} </p>
+<p>{{ institution.total_balance | usd }}</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Account name</th>
+            <th>Account mask</th>
+            <th>Account type</th>
+            <th>Balance</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for account in institution.accounts %}
+        <tr>
+            <td>{{ account.official_name }}</td>
+            <td>{{ account.mask }}</td>
+            <td>{{ account.type }}</td>
+            <td>{{ account.current_balance | usd }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endfor %}
+
+{% else %}
+
+
+
+
+{% endblock %}
