@@ -6,44 +6,45 @@ Dashboard
 
 {% block main %}
 
-<h1>Welcome {{ user.firstname }}</h1>
+{% if transactions %}
 
-{% if institutions %}
-
-<h2> Your total balance across all accounts is {{ total_balance | usd }}</h2>
-
-{% for institution in institutions %}
-
-<h2> {{ institution.institution_name }} </h2>
-<p> last refreshed {{ institution.timestamp }} </p>
-<p>{{ institution.total_balance | usd }}</p>
+<h1> Your transactions history </h1>
+<p> Check your transaction here across all your bank accounts</p>
 
 <table class="table table-striped">
     <thead>
         <tr>
+            <th>Date</th>
+            <th>Bank</th>
             <th>Account name</th>
-            <th>Account mask</th>
-            <th>Account type</th>
-            <th>Balance</th>
+            <th>Mask</th>
+            <th>Name</th>
+            <th>Amount</th>
         </tr>
     </thead>
     <tbody>
-        {% for account in institution.accounts %}
+        {% for transaction in transactions %}
         <tr>
-            <td>{{ account.official_name }}</td>
-            <td>{{ account.mask }}</td>
-            <td>{{ account.type }}</td>
-            <td>{{ account.current_balance | usd }}</td>
+            <td>{{ transaction.date }}</td>
+            <td>{{ transaction.institution_name }}</td>
+            <td>{{ transaction.official_name }}</td>
+            <td>{{ transaction.mask }}</td>
+            <td>{{ transaction.name }}</td>
+            <td>{{ transaction.amount | usd }}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
-{% endfor %}
-
 {% else %}
 
+<div class="col-sm-6">
+    <img src="static/clipboard_jesse.svg" width = "50px"/> 
+</div>
+<div class="col-sm-6">
+    <h3> Check back after you have added your accounts</h3>
+</div>
 
-
+{% endif %}
 
 {% endblock %}
