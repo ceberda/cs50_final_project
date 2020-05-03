@@ -331,7 +331,7 @@ def budget():
         
         # Calculate the last day of the month 
         prev_month_lastday = datetime.date.today().replace( day=1 ) - relativedelta(days=1)
-        
+
         budgets = get_db().execute("""
             SELECT budget.category, 
                    budget_summary.month_total * -1 as month_total, 

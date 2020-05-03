@@ -10,7 +10,7 @@ Transcations
 
 <h1> Your transactions history </h1>
 <h4> Check your transaction here across all your bank accounts</h4>
-<p>Transactions shown are form {{ today }} - {{ last_thirty }} </p>
+<p>Transactions shown are form {{ today.strftime('%B %d %Y') }} - {{ last_thirty.strftime('%B %d %Y') }} </p>
 
 <table class="table table-striped">
     <thead>

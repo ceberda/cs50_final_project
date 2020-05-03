@@ -9,6 +9,7 @@ Budget
 {% if active_accounts %}
 
 <h1> Your Budget </h1>
+<p>Showing you category spend across all accounts in {{ prev_month_firstday.strftime('%B %Y') }}</p>
 <form action="/budget" method="post">
     <table class="table table-striped">
         <thead>
