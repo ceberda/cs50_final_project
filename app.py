@@ -425,7 +425,10 @@ def budget():
         
         for category, budget_amount in request.form.items():
             if budget_amount:
-                budget_amount = float(budget_amount)
+                try:
+                    budget_amount = float(budget_amount)
+                except ValueError:
+                    return apology("Try again using a number", 400)
             else: 
                 budget_amount = None
 
