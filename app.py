@@ -408,6 +408,14 @@ def budget():
             WHERE user_id = :user_id
         """, user_id=session["user_id"])
 
+        # Calculate dangers!
+        for budget in budgets:
+            budget['danger'] = False
+
+            if budget.get('month_total') is not None and budget.get('budget_amount') is not None: 
+                if budget['month_total'] > budget['budget_amount']:
+                    budget['danger'] = True
+    
         return render_template("budget.html", 
                                 active_accounts=active_accounts,
                                 prev_month_firstday=prev_month_firstday,

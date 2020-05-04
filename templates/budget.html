@@ -9,11 +9,11 @@ Budget
 {% if active_accounts %}
 <div class="container">
     <div class="grid-element element-a"><h1> Your budget</h1></div>
-  </div>
+</div>
 <p>Showing you category spend across all accounts in {{ prev_month_firstday.strftime('%B %Y') }}</p>
 
 <form action="/budget" method="post">
-    <table class="table table-striped">
+    <table id="budget" class="table table-striped table-hover">
         <thead>
             <tr>
                 <th>Category</th>
@@ -23,7 +23,7 @@ Budget
         </thead>
         <tbody>
             {% for budget in budgets %}
-            <tr>
+            <tr class="{{"table-danger" if budget.danger }}"</tr>
                 <td>{{ budget.category }}</td>
                 {% if budget.month_total is not none %}
                 <td>{{ budget.month_total | usd }}</td>
@@ -39,9 +39,6 @@ Budget
     </table>
     <button class="btn btn-primary" type="submit">Save</button>
 </form>
-
-
-
 
 {% else %}
 
