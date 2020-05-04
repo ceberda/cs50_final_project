@@ -31,6 +31,8 @@ def after_request(response):
 app.jinja_env.filters["usd"] = usd
 
 # Configure session to use filesystem (instead of signed cookies)
+app.config["SESSION_FILE_DIR"] = mkdtemp()
+app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
@@ -455,16 +457,12 @@ def budget():
         flash('Your budget has been updated!')
         return redirect("/budget")
 
-# def errorhandler(e):
-#     """Handle error"""
-#     if not isinstance(e, HTTPException):
-#         e = InternalServerError()
-#     return apology(e.name, e.code)
+def errorhandler(e):
+    """Handle error"""
+    if not isinstance(e, HTTPException):
+        e = InternalServerError()
+    return apology(e.name, e.code)
 
-
-# # Listen for errors
-# for code in default_exceptions:
-#     app.errorhandler(code)(errorhandler)
-
-if __name__ == "__main__":
-    app.run(threaded=False)
+# Listen for errors
+for code in default_exceptions:
+    app.errorhandler(code)(errorhandler)
