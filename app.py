@@ -117,47 +117,39 @@ def index():
                             total_balance = total_balance,
                             plaid_public_key=PLAID_PUBLIC_KEY)
 
+
 @retry(plaid.errors.ItemError, tries=10, delay=5)
 def _retrying_get_transactions(access_token, start_date, end_date, account_id):
     ''' The test accounts in Plaid sometimes 'aren't ready' so we wait a bit and try again. '''
     return client.Transactions.get(access_token, start_date, end_date, account_ids=[account_id])
     
 
-# Exchange token flow - exchange a link public_token for
-# an API access_token
-# https://plaid.com/docs/#exchange-token-flow
-@app.route('/register_access_token', methods=['POST'])
-@login_required
-def register_access_token():
-    public_token = request.form['public_token']
+def _retreive_plaid_data( institution_id, access_token ):
+    ''' Pull all the accounts data and transaction data (maybe again). Clear anything we already have. '''
 
-    exchange_response = client.Item.public_token.exchange(public_token)
-    
-    # ACCESS TOKEN 
-    access_token = exchange_response['access_token']
-    session["access_token"] = access_token
-
-    # LOOKUP INSTITUION ID & NAME 
-
-    item_response = client.Item.get(access_token)
-    institution_response = client.Institutions.get_by_id(item_response['item']['institution_id'])
-
-    # Put access token and bank information in the financial institution table associated with the user_id
-    get_db().execute("INSERT INTO financial_institution (user_id, access_token, institution_id, institution_name) VALUES (:user_id, :access_token, :institution_id, :institution_name)",
-                user_id = session["user_id"],
-                access_token = access_token,
-                institution_id = item_response['item']['institution_id'],
-                institution_name = institution_response['institution']['name'])
-
-    # ACCOUNT DATA             
+    # Get account data from plaid.        
     accounts_response = client.Accounts.get(access_token)
+
+    # Delete any current accounts and their data.
+    get_db().execute( """
+        DELETE FROM transactions
+        WHERE account_id IN (SELECT account_id
+						   	 FROM accounts
+						 	 WHERE accounts.institution_id = :institution_id AND user_id = :user_id)
+        """, 
+        institution_id=institution_id, user_id=session['user_id'] )
+
+    get_db().execute( "DELETE FROM accounts WHERE institution_id = :institution_id AND user_id = :user_id", 
+                      institution_id=institution_id, user_id=session['user_id'] )
 
     # Put account data in the accounts table 
     for account in accounts_response['accounts']: 
         if account['subtype'] in ('checking', 'savings'):
+
+            # Insert account record into database. 
             get_db().execute("INSERT INTO accounts (user_id, institution_id, account_id, available_balance, current_balance, iso_currency_code, mask, official_name, type) VALUES (:user_id, :institution_id, :account_id, :available_balance, :current_balance, :iso_currency_code, :mask, :official_name, :type)", 
                 user_id = session["user_id"],
-                institution_id = item_response['item']['institution_id'],
+                institution_id = institution_id,
                 account_id = account['account_id'],
                 available_balance = account['balances']['available'],
                 current_balance = account['balances']['current'],
@@ -165,7 +157,6 @@ def register_access_token():
                 mask = account['mask'],
                 official_name = account['official_name'],
                 type = account['subtype'])
-
 
             # Calculate the first day of last month 
             prev_month_firstday = datetime.date.today().replace( day=1 ) - relativedelta(months=1)
@@ -175,7 +166,7 @@ def register_access_token():
             today = datetime.date.today()
             end_date = today.isoformat()
 
-            # TRANSACTION DATA 
+            # Pull transaction data. 
             transactions_response = _retrying_get_transactions(access_token, start_date, end_date, account['account_id'])
 
             for transaction in transactions_response['transactions']: 
@@ -188,6 +179,63 @@ def register_access_token():
                 amount = transaction['amount'] * -1, # Amount returned from Plaid is settled dollar value.  Positive values when money moves out of the account; negative values when money moves in.  For Jesse the data should be represented the opposite way, so * -1
                 iso_currency_code = transaction['iso_currency_code'],
                 date = transaction['date'])
+
+    # Update the refresh time. 
+    get_db().execute( """
+            UPDATE financial_institution 
+            SET timestamp = :timestamp
+            WHERE user_id = :user_id AND institution_id = :institution_id
+        """, 
+        timestamp = datetime.datetime.now(), 
+        institution_id=institution_id, 
+        user_id = session["user_id"] 
+    )
+
+
+@app.route('/refresh', methods=['POST'])
+@login_required
+def refresh():
+    ''' Refresh a particular institution. '''
+    # Lookup the access ID for this institution. 
+    access_tokens = get_db().execute( """
+            SELECT access_token
+            FROM financial_institution 
+            WHERE institution_id = :institution_id AND user_id = :user_id
+        """, 
+        institution_id=request.form['institution_id'], 
+        user_id = session["user_id"] 
+    )
+    access_token = access_tokens[0]['access_token']
+
+    # Update the data we have for this institution.
+    _retreive_plaid_data( request.form['institution_id'], access_token )
+
+    # Send the user back to the home page.
+    return redirect('/') 
+
+# Exchange token flow - exchange a link public_token for an API access_token
+# https://plaid.com/docs/#exchange-token-flow
+@app.route('/register_access_token', methods=['POST'])
+@login_required
+def register_access_token():
+    # Swap the public token for a nice access token we can reuse. 
+    public_token = request.form['public_token']
+    exchange_response = client.Item.public_token.exchange(public_token)
+    access_token = exchange_response['access_token']
+
+    # LOOKUP INSTITUION ID & NAME 
+    item_response = client.Item.get(access_token)
+    institution_response = client.Institutions.get_by_id(item_response['item']['institution_id'])
+
+    # Put access token and bank information in the financial institution table associated with the user_id
+    get_db().execute("INSERT INTO financial_institution (user_id, access_token, institution_id, institution_name) VALUES (:user_id, :access_token, :institution_id, :institution_name)",
+                user_id = session["user_id"],
+                access_token = access_token,
+                institution_id = item_response['item']['institution_id'],
+                institution_name = institution_response['institution']['name'])
+  
+    # Pull all the data in from plaid. 
+    _retreive_plaid_data( item_response['item']['institution_id'], access_token )
 
     return jsonify({})
 

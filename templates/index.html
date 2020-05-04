@@ -14,12 +14,20 @@ Dashboard
 
 {% for institution in institutions %}
 
-
+<form action="/refresh" method="post">
   <div class="row">
     <div class="col-md-4"><h3 class="text-left"> {{ institution.institution_name }} </h3></div>
     <div class="col-md-4 offset-md-4">
         <h5 class="text-right">Total balance:{{ institution.total_balance | usd }}</h5>
-        <p class="text-right"> last refreshed {{ institution.timestamp }} </p></div>
+        <p class="text-right"> 
+            last refreshed {{ institution.timestamp }} &nbsp; &nbsp;
+            
+            <input type="hidden" name="institution_id" value="{{ institution.institution_id }}">
+            <button class="btn btn-default btn-sm" type="submit">
+                <i class="fas fa-sync" aria-hidden="true"></i> Refresh
+            </button>
+        </p>  
+    </div>
   </div>
 <table class="table table-striped">
     <thead>
@@ -41,7 +49,7 @@ Dashboard
         {% endfor %}
     </tbody>
 </table>
-
+</form>
 {% endfor %}
 
 {% else %}
