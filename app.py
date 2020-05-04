@@ -1,7 +1,7 @@
 import os
 
 from cs50 import SQL
-from flask import Flask, flash, jsonify, redirect, render_template, request, session
+from flask import Flask, flash, jsonify, redirect, render_template, request, session, Response
 from flask_session import Session
 from tempfile import mkdtemp
 import plaid
@@ -218,6 +218,7 @@ def refresh():
 @app.route('/register_access_token', methods=['POST'])
 @login_required
 def register_access_token():
+    
     # Swap the public token for a nice access token we can reuse. 
     public_token = request.form['public_token']
     exchange_response = client.Item.public_token.exchange(public_token)
@@ -226,6 +227,19 @@ def register_access_token():
     # LOOKUP INSTITUION ID & NAME 
     item_response = client.Item.get(access_token)
     institution_response = client.Institutions.get_by_id(item_response['item']['institution_id'])
+
+    # We work on the assumption that we only have 1 token per instiution. 
+    # Send back an error so we can tell the user if they try to add a second one.
+    has_institution = get_db().execute("""
+            SELECT institution_id
+            FROM financial_institution 
+            WHERE institution_id = :institution_id AND user_id = :user_id
+        """, 
+        institution_id=item_response['item']['institution_id'], 
+        user_id = session["user_id"]
+    )
+    if has_institution:
+        return Response("Can only connect to each bank once per account.", status=400)
 
     # Put access token and bank information in the financial institution table associated with the user_id
     get_db().execute("INSERT INTO financial_institution (user_id, access_token, institution_id, institution_name) VALUES (:user_id, :access_token, :institution_id, :institution_name)",

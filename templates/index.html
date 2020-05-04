@@ -97,16 +97,18 @@ Dashboard
             // The metadata object contains info about the institution the
             // user selected and the account ID or IDs, if the
             // Select Account view is enabled.
-            $.post({
-                url: '/register_access_token',
-                data: {
-                    public_token: public_token,
-                }, 
-                success: function(data) {
+            // https://api.jquery.com/jquery.post/
+            // https://api.jquery.com/jQuery.ajax/#jqXHR
+            $.post( '/register_access_token', { public_token: public_token } )
+                .done(function( data, textStatus, jqXHR ) {
                     $('#loading').fadeOut('slow');
                     document.location.reload();
-                }
-            });
+                })
+                .fail(function( jqXHR, textStatus, errorThrown ) {
+                    $('#loading').fadeOut('slow');
+                    alert( jqXHR.responseText );
+                    document.location.reload();
+                });
         },
 
         onExit: function (err, metadata) {
