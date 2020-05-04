@@ -8,9 +8,11 @@ Transcations
 
 {% if transactions %}
 
-<h1> Your transactions history </h1>
-<h4> Check your transaction here across all your bank accounts</h4>
-<p>Transactions shown are form {{ today.strftime('%B %d %Y') }} - {{ last_thirty.strftime('%B %d %Y') }} </p>
+<div class="container">
+    <div class="grid-element element-a"><h1> Your transaction history</h1></div>
+  </div>
+<h4>Check your transaction history across all your bank accounts</h4>
+<p>Transactions are shown from {{ today.strftime('%B %d %Y') }} - {{ last_thirty.strftime('%B %d %Y') }} </p>
 
 <table class="table table-striped">
     <thead>
@@ -39,11 +41,12 @@ Transcations
 
 {% else %}
 
-<div class="col-sm-6">
-    <img src="static/clipboard_jesse.svg" width = "50px"/> 
-</div>
-<div class="col-sm-6">
-    <h3> Check back after you have added your accounts</h3>
+<div class="grid-container">
+    <div><img src="static/clipboard_jesse.svg" width = "100px"/> </div>
+    <div>
+        <h3>Check back after you have added your bank accounts</h3>
+        <p>Jesse lets you see your transaction history across all your accounts</p>
+    </div>
 </div>
 
 {% endif %}

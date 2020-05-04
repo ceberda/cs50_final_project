@@ -7,9 +7,11 @@ Budget
 {% block main %}
 
 {% if active_accounts %}
-
-<h1> Your Budget </h1>
+<div class="container">
+    <div class="grid-element element-a"><h1> Your budget</h1></div>
+  </div>
 <p>Showing you category spend across all accounts in {{ prev_month_firstday.strftime('%B %Y') }}</p>
+
 <form action="/budget" method="post">
     <table class="table table-striped">
         <thead>
@@ -28,7 +30,9 @@ Budget
                 {% else %}
                 <td>-</td>
                 {% endif %}
-                <td>$ <input name="{{ budget.category }}" value="{{ budget.budget_amount if budget.budget_amount != none else ""}}" text="number"></td>
+
+                <td>$ </div><input name="{{ budget.category }}" value="{{ budget.budget_amount if budget.budget_amount != none else ""}}" text="number" autocomplete="off" class="form-control"></td>
+
             </tr>
             {% endfor %}
         </tbody>
@@ -37,14 +41,19 @@ Budget
 </form>
 
 
+
+
 {% else %}
 
-<div class="col-sm-6">
-    <img src="static/jesse_graph.svg" width = "50px"/> 
+<div class="grid-container">
+    <div><img src="static/jesse_graph.svg" width = "180px"/></div>
+    <div>
+        <h3>Check back after you have added your bank accounts</h3>
+        <p>You'll be able see your spending by categories across all accounts for the previous month </p>
+        <p>Set budget for each category to help stay on top of your spending</p>
+    </div>
 </div>
-<div class="col-sm-6">
-    <h3> Check back here once your have added accounts</h3>
-</div>
+
 
 {% endif %}
 

@@ -6,18 +6,21 @@ Dashboard
 
 {% block main %}
 
-<h1>Welcome {{ user.firstname }}</h1>
 
 {% if institutions %}
-
-<h2> Your total balance across all accounts is {{ total_balance | usd }}</h2>
+<div class="container">
+    <div class="grid-element element-a"><h1> Your total balance across all linked accounts is {{ total_balance | usd }}</h1></div>
+  </div>
 
 {% for institution in institutions %}
 
-<h2> {{ institution.institution_name }} </h2>
-<p> last refreshed {{ institution.timestamp }} </p>
-<p>{{ institution.total_balance | usd }}</p>
 
+  <div class="row">
+    <div class="col-md-4"><h3 class="text-left"> {{ institution.institution_name }} </h3></div>
+    <div class="col-md-4 offset-md-4">
+        <h5 class="text-right">Total balance:{{ institution.total_balance | usd }}</h5>
+        <p class="text-right"> last refreshed {{ institution.timestamp }} </p></div>
+  </div>
 <table class="table table-striped">
     <thead>
         <tr>
@@ -43,14 +46,14 @@ Dashboard
 
 {% else %}
 
-<h1> See all your money in one place</h1>
-<p>Get started with Jesse in 3 easy steps</p>
-
-<div class="grid-container">
-    <div class="grid-item">1) Find to your bank</div>
-    <div class="grid-item">2) Securely link your bank accounts to Jesse</div>
-    <div class="grid-item">3) Let Jesse to do the rest</div>  
-</div>
+<div class="jumbotron">
+    <h1 class="display-3">Welcome, {{ user.firstname }}!</h1>
+    <p class="lead">See your finances all in one place that’s easy to understand</p>
+    <hr class="my-4">
+    <p> Get started with Jesse by linking all your bank accounts, in just minutes, you’ll see where your money is going </p>
+    <p>Jesse automatically updates and categorizes your bank data so you'll always be on top your finances</p>
+    <p>Manage your money by setting budgets, see how your last month spend compares against what you have budgeted </p>
+  </div>
 
 {% endif %}
 

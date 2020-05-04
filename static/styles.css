@@ -32,7 +32,7 @@ main table
 
 .grid-container {
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto auto;
     padding: 10px;
 }
 
@@ -40,6 +40,28 @@ main table
     padding: 20px;
     font-size: 20px;
     text-align: center;
+}
+
+
+.grid-element {
+    font-size: 1em;
+    padding-bottom: 3%;
+    color: #1E5264;
+}
+  
+.element-a {
+    grid-column-start: 3;
+    grid-column-end: 4;
+    grid-row-start: 1;
+    grid-row-end: 2;
+}
+
+.row{
+    padding-top: 3%;
+}
+
+.icon {
+    text-align: left;
 }
 
 #loading {

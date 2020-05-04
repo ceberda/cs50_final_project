@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="180px" height="180px" viewBox="0 0 180 180" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>calculator</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="calculator" transform="translate(-30.000000, -30.000000)">
+            <g id="bounding-box">
+                <polygon id="shape" points="0 0 240 0 240 240 0 240"></polygon>
+            </g>
+            <rect id="Rectangle" stroke="#46AAF7" stroke-width="10" fill="#E8F7FF" fill-rule="nonzero" x="65" y="125" width="10" height="10" rx="5"></rect>
+            <rect id="Rectangle-Copy-4" stroke="#46AAF7" stroke-width="10" fill="#E8F7FF" fill-rule="nonzero" x="125" y="125" width="10" height="10" rx="5"></rect>
+            <rect id="Rectangle-Copy-6" stroke="#46AAF7" stroke-width="10" fill="#E8F7FF" fill-rule="nonzero" x="95" y="125" width="10" height="10" rx="5"></rect>
+            <rect id="Rectangle-Copy" stroke="#46AAF7" stroke-width="10" fill="#E8F7FF" fill-rule="nonzero" x="65" y="165" width="10" height="10" rx="5"></rect>
+            <rect id="Rectangle-Copy-5" stroke="#46AAF7" stroke-width="10" fill="#E8F7FF" fill-rule="nonzero" x="125" y="165" width="10" height="10" rx="5"></rect>
+            <rect id="Rectangle-Copy-7" stroke="#46AAF7" stroke-width="10" fill="#E8F7FF" fill-rule="nonzero" x="95" y="165" width="9" height="10" rx="4.5"></rect>
+            <rect id="Rectangle" stroke="#46AAF7" stroke-width="10" x="35" y="35" width="170" height="170" rx="15"></rect>
+            <rect id="Rectangle" stroke="#46AAF7" stroke-width="10" fill="#E8F7FF" fill-rule="nonzero" x="55" y="65" width="130" height="30" rx="15"></rect>
+            <rect id="Rectangle" stroke="#46AAF7" stroke-width="10" fill="#E8F7FF" fill-rule="nonzero" x="155" y="125" width="20" height="50" rx="10"></rect>
+        </g>
+    </g>
+</svg>
