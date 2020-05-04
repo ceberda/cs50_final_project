@@ -435,7 +435,7 @@ def budget():
                 WHERE user_id = :user_id AND category = :category
             """, category=category, user_id=session["user_id"], budget_amount=budget_amount )
 
-        flash('Your budget have been updated!')
+        flash('Your budget has been updated!')
         return redirect("/budget")
 
 # def errorhandler(e):

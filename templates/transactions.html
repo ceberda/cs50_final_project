@@ -16,7 +16,7 @@ Transcations
 
 <table class="table table-striped">
     <thead>
-        <tr>
+        <tr style="text-align: center;">
             <th>Date</th>
             <th>Bank</th>
             <th>Account name</th>
@@ -28,12 +28,12 @@ Transcations
     <tbody>
         {% for transaction in transactions %}
         <tr>
-            <td>{{ transaction.date }}</td>
-            <td>{{ transaction.institution_name }}</td>
-            <td>{{ transaction.official_name }}</td>
-            <td>{{ transaction.mask }}</td>
-            <td>{{ transaction.name }}</td>
-            <td>{{ transaction.amount | usd }}</td>
+            <td style="text-align: center;">{{ transaction.date }}</td>
+            <td style="text-align: center;">{{ transaction.institution_name }}</td>
+            <td style="text-align: center;">{{ transaction.official_name }}</td>
+            <td style="text-align: center;">{{ transaction.mask }}</td>
+            <td style="text-align: left;">{{ transaction.name }}</td>
+            <td style="text-align: right;">{{ transaction.amount | usd }}</td>
         </tr>
         {% endfor %}
     </tbody>
