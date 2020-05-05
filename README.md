@@ -12,7 +12,7 @@ If you don't have ``pipenv`` installed, head to their [install page](https://pip
 
 ## Plaid API Access
 
-Jesse makes extensive use of [Plaid](http://plaid.com/) to get account and transaction data. To use Jesse, you will need to sign up for access to a sandbox account with Plaid. 
+Jesse uses  [Plaid](http://plaid.com/) to get account and transaction data. To use Jesse, you will need to sign up for access to a sandbox account with Plaid. 
 
 Steps:
 
@@ -49,3 +49,24 @@ Then we can run Jesse using the following command, substituting your Plaid API k
 (if you have already exported the Plaid keys, you do not need to include them in this command). 
 
 Jesse should now startup on http://localhost:5000! Head to the 'Getting Started' page to sign up for an account. 
+
+
+## Using the Plaid Sandbox
+
+When using Jesse, you will need to link 'fake' bank accounts using the Plaid Sandbox. 
+
+There are two logins you can use to do this and all logins work for all banks (choose any!). 
+
+### Standard
+
+    User:     user_good
+    Password: pass_good
+
+This will give you a default sandbox with some transctions. It will login quickly, so it's a good one to start with. 
+
+### Custom user
+    User:     user_custom
+    Password: {}
+
+This will give you more interesting data, where the account data (inclucing the balances) vary between accounts and more transaction data is returned.  It will take much longer for the data to be returned, so you'll need to watch the spinner and wait for the dashbord to load 
+
