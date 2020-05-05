@@ -129,7 +129,7 @@ def _retrying_get_transactions(access_token, start_date, end_date, account_id):
 def _retreive_plaid_data( institution_id, access_token ):
     ''' Pull all the accounts data and transaction data (maybe again). Clear anything we already have. '''
 
-    # Get account data from plaid.        
+    # Get account data from Plaid.        
     accounts_response = client.Accounts.get(access_token)
 
     # Delete any current accounts and their data.
@@ -230,8 +230,8 @@ def register_access_token():
     item_response = client.Item.get(access_token)
     institution_response = client.Institutions.get_by_id(item_response['item']['institution_id'])
 
-    # We work on the assumption that we only have 1 token per instiution. 
-    # Send back an error so we can tell the user if they try to add a second one.
+    # Worked on the assumption that the user can only have one token per instiution. 
+    # If user tries to add the same bank again, return error 
     has_institution = get_db().execute("""
             SELECT institution_id
             FROM financial_institution 
@@ -241,7 +241,7 @@ def register_access_token():
         user_id = session["user_id"]
     )
     if has_institution:
-        return Response("Can only connect to each bank once per account.", status=400)
+        return Response("Looks like you already added this bank.  You can only connect to each bank once.", status=400)
 
     # Put access token and bank information in the financial institution table associated with the user_id
     get_db().execute("INSERT INTO financial_institution (user_id, access_token, institution_id, institution_name) VALUES (:user_id, :access_token, :institution_id, :institution_name)",
@@ -267,11 +267,11 @@ def login():
 
         # Ensure username was submitted
         if not request.form.get("username"):
-            return apology("must provide username", 403)
+            return apology("Please provide username", 403)
 
         # Ensure password was submitted
         elif not request.form.get("password"):
-            return apology("must provide password", 403)
+            return apology("Please provide password", 403)
 
         # Query database for username
         rows = get_db().execute("SELECT * FROM users WHERE username = :username",
@@ -279,7 +279,7 @@ def login():
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
-            return apology("invalid username and/or password", 403)
+            return apology("Invalid username and/or password", 403)
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
@@ -341,16 +341,16 @@ def register():
 
         # The username input is blank
         if not request.form.get("username"):
-            return apology("Must provide username", 400)
+            return apology("Please provide username", 400)
 
         # The password input is blank
         elif not request.form.get("password"):
-            return apology("Must provide password", 400)
+            return apology("Please provide password", 400)
 
         # The username already exist
         elif len( get_db().execute("SELECT * FROM users WHERE username = :username",
                         username=request.form.get("username")) ) > 0:
-            return apology("username already exist", 400)
+            return apology("This username already exist", 400)
 
         # Passwords do not match
         elif request.form.get("password") != request.form.get("confirmation"):
@@ -444,7 +444,7 @@ def budget():
                 try:
                     budget_amount = float(budget_amount)
                 except ValueError:
-                    return apology("Try again using a number", 400)
+                    return apology("Please try again using a number", 400)
             else: 
                 budget_amount = None
 
