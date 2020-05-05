@@ -221,7 +221,7 @@ def refresh():
 @login_required
 def register_access_token():
     
-    # Swap the public token for a nice access token we can reuse. 
+    # Swap the public token for an access token we can reuse. 
     public_token = request.form['public_token']
     exchange_response = client.Item.public_token.exchange(public_token)
     access_token = exchange_response['access_token']
@@ -335,7 +335,7 @@ def register():
     # when the requested via GET, should display registration form
     if request.method == "GET":
         return render_template("register.html")
-
+     
     # when form is submitted via POST
     elif request.method == "POST":
 
@@ -347,6 +347,14 @@ def register():
         elif not request.form.get("password"):
             return apology("Please provide password", 400)
 
+         # The firstname input is blank
+        elif not request.form.get("firstname"):
+            return apology("Please provide first name", 400)
+
+         # The lastname input is blank
+        elif not request.form.get("lastname"):
+            return apology("Please provide last name", 400)
+        
         # The username already exist
         elif len( get_db().execute("SELECT * FROM users WHERE username = :username",
                         username=request.form.get("username")) ) > 0:
