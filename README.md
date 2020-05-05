@@ -6,9 +6,10 @@ Getting a clear view into your finances can be difficult, especially for people 
 
 ## Package Management & Environment Setup
 
-This project uses ``pipenv`` to configure the runtime environment and package downloads. 
+This project uses ``pipenv`` to configure the runtime environment and package downloads. The project also requires Python 3.7 to run. 
 
 If you don't have ``pipenv`` installed, head to their [install page](https://pipenv-fork.readthedocs.io/en/latest/#install-pipenv-today) and install it before continuing. 
+
 
 ## Plaid API Access
 
@@ -28,8 +29,8 @@ NOTE: the Sandbox environment never has any real data and will never ask you log
 
 When running Jesse we set the Plaid API keys via environment variables. You can do this once per shell using `export` or prepend them the command to start the server (see below). 
 
-    PLAID_CLIENT_ID = <client_id>
     PLAID_PUBLIC_KEY = <public_key>
+    PLAID_CLIENT_ID = <client_id>
     PLAID_SECRET = <Sandbox secret>
 
 ## Running Jesse Locally
@@ -48,7 +49,7 @@ Then we can run Jesse using the following command, substituting your Plaid API k
 
 (if you have already exported the Plaid keys, you do not need to include them in this command). 
 
-Jesse should now startup on http://localhost:5000! Head to the 'Getting Started' page to sign up for an account. 
+Jesse should now startup on http://localhost:5000! Head to the 'Register' page to sign up for an account. 
 
 
 ## Using the Plaid Sandbox
@@ -62,11 +63,11 @@ There are two logins you can use to do this and all logins work for all banks (c
     User:     user_good
     Password: pass_good
 
-This will give you a default sandbox with some transctions. It will login quickly, so it's a good one to start with. 
+This will give you a default sandbox with some transactions. It will login quickly, so it's a good one to start with. 
 
 ### Custom user
     User:     user_custom
     Password: {}
 
-This will give you more interesting data, where the account data (inclucing the balances) vary between accounts and more transaction data is returned.  It will take much longer for the data to be returned, so you'll need to watch the spinner and wait for the dashbord to load 
+This will give you more interesting data, where the account data (including the balances) vary between accounts and more transaction data is returned.  It will take much longer for the data to be returned, so you'll need to watch the spinner and wait for the dashboard to load.
 
